@@ -76,4 +76,4 @@ decks (N) ──> (1) deck_config
 
 - Anki Source: [[https://github.com/ankitects/anki]]
 - Protobuf Definitions: =anki/proto/anki/*.proto=
-- Rust Implementation: =rslib/src/storage/=
+- Rust Implementation: =rslib/src/=
