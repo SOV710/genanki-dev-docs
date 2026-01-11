@@ -1,0 +1,79 @@
+#+title: Anki Collection Schema v18 Architecture
+#+author: SOV710
+#+date: <2026-01-11 Sun>
+#+startup: showall
+
+* Overview
+
+This documentation covers the Anki collection database schema version 18 (v18), which represents a significant evolution from the previous v11 schema supported by genanki.
+
+** Key Changes from v11 to v18
+
+- *ZSTD Compression*: Collections are now stored as =collection.anki21b= files (ZSTD-compressed SQLite databases)
+- *Protobuf Serialization*: Configuration data migrated from JSON to Protocol Buffers
+- *Normalized Schema*: Legacy JSON blobs in =col= table extracted into dedicated tables
+- *Unicase Collation*: Case-insensitive sorting via custom SQLite collation
+
+** Database Information
+
+| Property      | Value                  |
+|---------------+------------------------|
+| File Format   | collection.anki21b     |
+| Compression   | ZSTD                   |
+| Schema Version | v18                   |
+| Base Format   | SQLite 3               |
+
+* Table Index
+
+** Core Tables
+
+- [[file:tables/col.org][col]] - Collection metadata (singleton table)
+- [[file:tables/config.org][config]] - Global configuration key-value store
+- [[file:tables/cards.org][cards]] - Individual flashcard instances
+- [[file:tables/notes.org][notes]] - Note content storage
+- [[file:tables/notetypes.org][notetypes]] - Note type definitions
+- [[file:tables/decks.org][decks]] - Deck hierarchy
+- [[file:tables/deck_config.org][deck_config]] - Scheduling parameters
+
+** Auxiliary Tables
+
+- [[file:tables/fields.org][fields]] - Notetype field definitions
+- [[file:tables/templates.org][templates]] - Card template definitions  
+- [[file:tables/tags.org][tags]] - Tag registry
+- [[file:tables/revlog.org][revlog]] - Review history log
+- [[file:tables/graves.org][graves]] - Deletion tracking
+
+* Protobuf Blob Index
+
+Several tables store configuration as serialized Protocol Buffer messages:
+
+- [[file:proto/deck_config-config.org][deck_config.config]] - Scheduling algorithm parameters
+- [[file:proto/notetypes-config.org][notetypes.config]] - CSS, LaTeX, and display settings
+- [[file:proto/decks-common.org][decks.common]] - Common deck metadata
+- [[file:proto/decks-kind.org][decks.kind]] - Normal vs. Filtered deck configuration
+
+* Schema Versioning
+
+The =col.ver= field tracks the schema version:
+
+- v11: Legacy JSON-based schema (genanki current support)
+- v18: Current schema with protobuf and normalized tables
+
+* Data Relationships
+
+#+begin_example
+notetypes (1) ──< (N) fields
+          (1) ──< (N) templates
+
+notetypes (1) ──< (N) notes
+notes (1) ──< (N) cards
+cards (N) ──> (1) decks
+
+decks (N) ──> (1) deck_config
+#+end_example
+
+* References
+
+- Anki Source: [[https://github.com/ankitects/anki]]
+- Protobuf Definitions: =anki/proto/anki/*.proto=
+- Rust Implementation: =rslib/src/storage/=
