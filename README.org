@@ -224,12 +224,3 @@ Different precision used for different purposes:
 ** Community Resources
 - genanki (v11 support): [[https://github.com/kerrickstaley/genanki]]
 - Anki Forums: [[https://forums.ankiweb.net/]]
-
-* Document Conventions
-
-This documentation follows these conventions:
-- Code/field names: =monospace=
-- Emphasis: *bold*
-- Cross-references: [[link][description]]
-- SQL/code blocks: =#+begin_src= blocks
-- Tables: Org-mode table syntax
